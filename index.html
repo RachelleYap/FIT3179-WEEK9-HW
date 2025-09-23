@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Malaysia Household Income by State in 2022</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 20px; }
+    #vis { max-width: 980px; margin: 16px auto; }
+  </style>
+</head>
+<body>
+  <h1>Malaysia Household Income by State in 2022</h1>
+  <div id="vis"></div>
+
+  <script>
+    // If your JSON is inside a folder, e.g. "Data/", change the URL below accordingly.
+    const topoUrl = "ne_10m_admin_1_states_provinces.json";
+
+    const incomeData = [
+      {"state": "Johor", "income_mean (RM)": 8517, "income_median (RM)": 6879},
+      {"state": "Kedah", "income_mean (RM)": 5550, "income_median (RM)": 4402},
+      {"state": "Kelantan", "income_mean (RM)": 4885, "income_median (RM)": 3614},
+      {"state": "Melaka", "income_mean (RM)": 8057, "income_median (RM)": 6210},
+      {"state": "Negeri Sembilan", "income_mean (RM)": 6788, "income_median (RM)": 5226},
+      {"state": "Pahang", "income_mean (RM)": 5777, "income_median (RM)": 4753},
+      {"state": "Perak", "income_mean (RM)": 5779, "income_median (RM)": 4494},
+      {"state": "Perlis", "income_mean (RM)": 5664, "income_median (RM)": 4713},
+      {"state": "Pulau Pinang", "income_mean (RM)": 8267, "income_median (RM)": 6502},
+      {"state": "Sabah", "income_mean (RM)": 6171, "income_median (RM)": 4577},
+      {"state": "Sarawak", "income_mean (RM)": 6457, "income_median (RM)": 4978},
+      {"state": "Selangor", "income_mean (RM)": 12233, "income_median (RM)": 9983},
+      {"state": "Terengganu", "income_mean (RM)": 7248, "income_median (RM)": 5878},
+      {"state": "Kuala Lumpur", "income_mean (RM)": 13325, "income_median (RM)": 10234},
+      {"state": "Labuan", "income_mean (RM)": 8250, "income_median (RM)": 6904},
+      {"state": "Putrajaya", "income_mean (RM)": 13473, "income_median (RM)": 10056}
+    ];
+
+    const spec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": 820,
+      "height": 540,
+
+      // Nice Malaysia framing; tweak scale if needed.
+      "projection": { "type": "mercator", "center": [110, 4.5], "scale": 2400 },
+
+      "layer": [
+        // Optional light graticule for reference
+        {
+          "data": { "graticule": { "step": [10, 10] } },
+          "mark": { "type": "geoshape", "stroke": "#e6e6e6", "fill": null }
+        },
+
+        // Main state shapes from your TopoJSON, with income lookup
+        {
+          "data": {
+            "url": topoUrl,
+            "format": { "type": "topojson", "feature": "ne_10m_admin_1_states_provinces" }
+          },
+          "transform": [
+            { "filter": "datum.properties.iso_a2 === 'MY'" },
+            {
+              "lookup": "properties.name",
+              "from": {
+                "data": { "values": incomeData },
+                "key": "state",
+                "fields": ["income_mean (RM)", "income_median (RM)"]
+              }
+            }
+          ],
+          "mark": { "type": "geoshape", "stroke": "#444", "strokeWidth": 0.6 },
+          "encoding": {
+            "color": {
+              "field": "income_median (RM)",
+              "type": "quantitative",
+              "scale": { "scheme": "blues" },
+              "title": "Median Income (RM)"
+            },
+            "tooltip": [
+              { "field": "properties.name", "type": "nominal", "title": "State" },
+              { "field": "income_mean (RM)", "type": "quantitative", "title": "Mean Income (RM)" },
+              { "field": "income_median (RM)", "type": "quantitative", "title": "Median Income (RM)" }
+            ]
+          }
+        }
+      ]
+    };
+
+    vegaEmbed("#vis", spec, { actions: false });
+  </script>
+</body>
+</html>
