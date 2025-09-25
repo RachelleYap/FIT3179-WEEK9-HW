@@ -16,8 +16,9 @@
   <div id="vis"></div>
 
   <script>
-    // If your JSON is inside a folder, e.g. "Data/", change the URL below accordingly.
+    // Update URLs based on your repository structure
     const topoUrl = "ne_10m_admin_1_states_provinces.json";
+    const worldUrl = "ne_10m_admin_0_countries.json"; // Add this file from Natural Earth
 
     const incomeData = [
       {"state": "Johor", "income_mean (RM)": 8517, "income_median (RM)": 6879},
@@ -44,13 +45,20 @@
       "height": 540,
 
       // Nice Malaysia framing; tweak scale if needed.
-      "projection": { "type": "mercator", "center": [110, 4.5], "scale": 2400 },
+      "projection": { "type": "mercator", "center": [110, 4.5], "scale": 2200 },
 
       "layer": [
-        // Optional light graticule for reference
+        // World outline for context
         {
-          "data": { "graticule": { "step": [10, 10] } },
-          "mark": { "type": "geoshape", "stroke": "#e6e6e6", "fill": null }
+          "data": {
+            "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/7_others/oceans.topojson",
+            "format": { "type": "topojson", "feature": "oceans" }},
+          "mark": { "type": "geoshape", "fill": "#cce5ff"}},
+
+        // Graticule with enhanced visibility
+        {
+          "data": { "graticule": { "step": [1, 1] } },
+          "mark": { "type": "geoshape", "stroke": "#666", "strokeWidth": 1, "fill": null }
         },
 
         // Main state shapes from your TopoJSON, with income lookup
